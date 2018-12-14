@@ -34,4 +34,4 @@ namespace http {
   private:
     ClientImpl _impl; 
   };
-}
+};

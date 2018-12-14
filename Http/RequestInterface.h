@@ -8,5 +8,6 @@ namespace http {
     virtual void setBody(String body) = 0;
     virtual void addHeader(String key, String value) = 0;
     virtual Response execute() = 0;
+    virtual ~RequestInterface() {};
   };
-}
+};

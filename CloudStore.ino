@@ -4,7 +4,7 @@
 #include "ConnectionWrapper.h"
 #include "CloudStorage.h"
 
-CloudStorage storage("gil", "123456");
+CloudStorage<http::Esp8266Request> storage("gil", "123456");
 
 void setup() {
   Serial.begin(115200);

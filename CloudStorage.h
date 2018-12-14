@@ -1,9 +1,11 @@
 #pragma once
+
 #include <Arduino.h>
 #include <ArduinoJson.h>
 
 const String BaseServerUrl = "http://192.168.43.73:8080";
 
+template <class RequestType>
 class CloudStorage {
 public:
   CloudStorage(String username = "", String password = ""): _username(username), _password(password) {}
@@ -17,7 +19,7 @@ public:
   bool put(String key, Ty value) {    
     String jsonString = getPutRequestJson(key, value);
 
-    http::Esp8266Request request(
+    RequestType request(
       BaseServerUrl + "/data/object", 
       http::Method::POST, 
       jsonString
@@ -33,7 +35,7 @@ public:
     // Construct Http Request
     String jsonString = getGetRequestJson(key);
 
-    http::Esp8266Request request(
+    RequestType request(
       BaseServerUrl + "/data/object", 
       http::Method::GET, 
       jsonString
