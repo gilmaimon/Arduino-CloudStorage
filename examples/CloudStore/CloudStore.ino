@@ -1,15 +1,12 @@
-#include <Arduino.h>
+#include <WifiConnection.h>
+#include <CloudStorage.h>
 
-#include "Http/EspClient.h"
-#include "ConnectionWrapper.h"
-#include "CloudStorage.h"
-
-CloudStorage<http::Esp8266Request> storage("gil", "123456");
+CloudStorage storage("gil", "123456");
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Begin");
-  WifiConnection::tryConnect("The Promised Lan", "251998gil");  
+  WifiConnection::tryConnect("WIFI_SSID", "WIFI_PASSWORD");  
   delay(3 * 1000); // Give some time to connect to wifi
 }
 
@@ -31,4 +28,3 @@ void loop() {
 
   delay(10000);
 }
-
