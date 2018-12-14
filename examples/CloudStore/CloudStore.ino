@@ -1,7 +1,7 @@
 #include <WifiConnection.h>
 #include <CloudStorage.h>
 
-CloudStorage storage("gil", "123456");
+CloudStorage storage("BASE_URL", "USERNAME", "PASSWORD");
 
 void setup() {
   Serial.begin(115200);
