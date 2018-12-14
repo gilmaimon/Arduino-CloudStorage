@@ -5,12 +5,11 @@
 #include "Http/Client.h"
 #include "Http/EspClient.h"
 
-const String BaseServerUrl = "http://192.168.43.73:8080";
-
 template <class RequestType>
 class BaseCloudStorage {
 public:
-  BaseCloudStorage(String username = "", String password = ""): _username(username), _password(password) {}
+  BaseCloudStorage(String baseServerUrl, String username = "", String password = ""): 
+    _username(username), _password(password), _baseServerUrl(baseServerUrl) {}
   
   void setCredentials(String name, String pass) {
     this->_username = name;
@@ -22,7 +21,7 @@ public:
     String jsonString = getPutRequestJson(key, value);
 
     RequestType request(
-      BaseServerUrl + "/data/object", 
+      _baseServerUrl + "/data/object", 
       http::Method::POST, 
       jsonString
     );
@@ -38,23 +37,23 @@ public:
     String jsonString = getGetRequestJson(key);
 
     RequestType request(
-      BaseServerUrl + "/data/object", 
+      _baseServerUrl + "/data/object", 
       http::Method::GET, 
       jsonString
     );
     
-    request.addHeader("Content-Type", "application/json");
+    request.addHeader("Content-Type", "application/json; charset=utf-8");
     http::Response response = request.execute();
 
     // Parse response and return value
     StaticJsonBuffer<300> jsonBuffer;
     JsonObject& root = jsonBuffer.parseObject(response.body);
-    return root["result"][key];
+    return getValueByKey<Ty>(root["result"], key);
   }
   
 private:
-  String _username;
-  String _password;
+  String _username, _password;
+  const String _baseServerUrl;
 
   template <class Type>
   String getPutRequestJson(String key, Type value) {
@@ -83,6 +82,15 @@ private:
     root.printTo(jsonString);
     return jsonString;
   }
+
+  template <class Type>
+  Type getValueByKey(JsonObject& root, String key) {
+    if(key.indexOf('.') == -1) return root[key];
+    String parentKey = key.substring(0, key.indexOf('.'));
+    String remainder = key.substring(key.indexOf('.') + 1);
+
+    return getValueByKey<Type>(root[parentKey], remainder);
+  } 
 };
 
 typedef BaseCloudStorage<http::Esp8266Request> CloudStorage;
