@@ -1,0 +1,16 @@
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+CloudStorage	KEYWORD1
+WifiConnection	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+isConnected	KEYWORD2
+tryConnect	KEYWORD2
+setCredentials	KEYWORD2
+put	KEYWORD2
+get	KEYWORD2

@@ -2,13 +2,15 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include "Http/Client.h"
+#include "Http/EspClient.h"
 
 const String BaseServerUrl = "http://192.168.43.73:8080";
 
 template <class RequestType>
-class CloudStorage {
+class BaseCloudStorage {
 public:
-  CloudStorage(String username = "", String password = ""): _username(username), _password(password) {}
+  BaseCloudStorage(String username = "", String password = ""): _username(username), _password(password) {}
   
   void setCredentials(String name, String pass) {
     this->_username = name;
@@ -82,3 +84,5 @@ private:
     return jsonString;
   }
 };
+
+typedef BaseCloudStorage<http::Esp8266Request> CloudStorage;
