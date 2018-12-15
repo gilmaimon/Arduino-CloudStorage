@@ -1,5 +1,5 @@
 # Arduino-CloudStorage
-Arduino Arduino library for the CloudStorage server project
+Arduino library for the CloudStorage server project
 Allows to easly store and retrive key/value pairs.
 
 Example Usage:
