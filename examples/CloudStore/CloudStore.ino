@@ -14,17 +14,20 @@ void loop() {
   Serial.println("Checking Connection");
   if (WifiConnection::isConnected()) {
     
-    int val = storage.get<int>("age");
-    
+    // Get the current value (or 0 if dosent exist yet)
+    int val = storage.get<int>("key");
+
+    // Log current value
     Serial.print("Got value: ");
     Serial.print(val);
     Serial.println(" . Updating...");
     
-    storage.put<int>("age", val + 1);
+    // Increment by 1 and store in the server
+    storage.put<int>("key", val + 1);
     
   } else {
     Serial.println("No Connection");
   }
 
-  delay(10000);
+  delay(1000);
 }
