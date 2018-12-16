@@ -57,6 +57,25 @@ public:
     JsonObject& root = jsonBuffer.parseObject(response.body);
     return getValueByKey<Ty>(root["result"], key);
   }
+
+  //Method for pushing new values to arrays
+  template <class Ty>
+  bool add(String key, Ty object) {
+    // Build request json 
+    String jsonString = buildAddObjectRequestJson(key, object);
+
+    // Construct http request
+    RequestType request(
+      _baseServerUrl + "/data/collection", 
+      http::Method::POST, 
+      jsonString
+    );
+    request.addHeader("Content-Type", "application/json; charset=utf-8");
+
+    // Execute request and return success status
+    http::Response response = request.execute();
+    return response.statusCode == 200;
+  }
   
 private:
   String _username, _password;
@@ -87,6 +106,23 @@ private:
     root["username"] = _username;
     root["password"] = _password;
     root["key"] = key;
+
+    // Return string form of the object
+    String jsonString;
+    root.printTo(jsonString);
+    return jsonString;
+  }
+
+  // Utility method for constructing *Add* request json string
+  template <class Ty>
+  String buildAddObjectRequestJson(String key, Ty object) {
+    // Compose request json object
+    StaticJsonBuffer<200> jsonBuffer;
+    JsonObject& root = jsonBuffer.createObject();
+    root["username"] = _username;
+    root["password"] = _password;
+    root["collection_key"] = key;
+    root["value"] = object;
 
     // Return string form of the object
     String jsonString;
