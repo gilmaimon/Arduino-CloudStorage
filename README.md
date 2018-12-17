@@ -15,7 +15,7 @@ Quick Jump:
 3. Clone the repository in the `libraries` folder and restart the Arduino IDE.
 4. Should be good to go! Try to load the example sketches from the menu, "File" -> Examples" -> "ArduinoCloudStorage"
 
-For information on installing libraries, see: http://www.arduino.cc/en/Guide/Libraries
+For more information on installing libraries, see: http://www.arduino.cc/en/Guide/Libraries
 
 # Features & Syntax
 1. Store key/value pairs to the server
