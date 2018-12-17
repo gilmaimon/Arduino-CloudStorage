@@ -3,10 +3,10 @@ Arduino/ESP8266 library that allows you to easly store and retreive data from a 
 *Open an issue or contact me if you need any help!*
 
 Quick Jump:
-* Features & Syntax
-* Known Issues
-* Requirements
-* Examples
+* [Features & Syntax](#features--syntax)
+* [Requirements](#requirements)
+* [Known Issues](#known-issues)
+* [Examples](#examples)
 
 # Features & Syntax
 1. Store key/value pairs to the server
