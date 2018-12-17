@@ -1,13 +1,41 @@
 # Arduino-CloudStorage
-Arduino/ESP8266 library that allows:
+Arduino/ESP8266 library that allows you to easly store and retreive data from a remote (cloud) storage. CloudStorage server can be found [here](https://github.com/gilmaimon/CloudStorage-Server).
+*Open an issue or contact me if you need any help!*
+
+Quick Jump:
+* Features & Syntax
+* Known Issues
+* Requirements
+* Examples
+
+# Features & Syntax
 1. Store key/value pairs to the server
+```C++
+storage.put<int>("age", 20);
+storage.put<float>("temperature", 25.8);
+storage.put<bool>("switch_state", false);
+```
 2. Fetch key/value pairs from the server
+```C++
+int age = storage.get<int>("age");
+float temperature = storage.put<float>("temperature");
+bool isSwitchOn = storage.put<bool>("switch_state");
+```
 3. Add values to an array in the server.
+```C++
+storage.add<float>("sensor_values", getCurrentSensorValue());
+storage.add<String>("startup_dates", "17.12.2018");
+```
 
 # Requirements
 * This library uses the `ArduinoJson` library as a depedency.
 * You must have an instance of [CloudStorage Server](https://github.com/gilmaimon/CloudStorage-Server) running.
 * You must have valid `username` and `password` (on your CloudStorage Server)
+
+# Known Issues
+* Bad error reporting and handling
+* No explanation on setting up a server.
+
 # Examples
 
 #### Increment Value in Server
@@ -93,3 +121,4 @@ void loop() {
   delay(5 * 1000);
 }
 ```
+*Open an issue or contact me if you need any help!*
