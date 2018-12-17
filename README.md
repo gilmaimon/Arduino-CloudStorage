@@ -38,7 +38,7 @@ storage.add<String>("startup_dates", "17.12.2018");
 
 # Examples
 
-#### Increment Value in Server
+### Increment Value in Server
 This example sketch:
 1. Connects to a WiFi network
 2. Initializes a value in the server
@@ -86,7 +86,7 @@ void loop() {
 }
 ```
 
-#### Log Sensor Values
+### Log Sensor Values
 This example sketch:
 1. Connects to a WiFi network
 2. Then, in `loop()`: reads and logs sensor value to the server
