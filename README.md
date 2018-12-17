@@ -3,10 +3,17 @@ Arduino/ESP8266 library that allows you to easly store and retreive data from a 
 *Open an issue or contact me if you need any help!*
 
 Quick Jump:
+* [How To Install](#How-To-Install)
 * [Features & Syntax](#features--syntax)
 * [Requirements](#requirements)
 * [Known Issues](#known-issues)
 * [Examples](#examples)
+
+# How To Install
+1. Just go to your local folder for Arduino projects (usually `User/Documents/Arduino/`).
+2. Step into the folder called `libraries`
+3. Clone the repository in the `libraries` folder and restart the Arduino IDE.
+4. Should be good to go! Try to load the example sketches from the menu, "File" -> Examples" -> "ArduinoCloudStorage"
 
 # Features & Syntax
 1. Store key/value pairs to the server
