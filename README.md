@@ -28,8 +28,8 @@ storage.put<bool>("switch_state", false);
 2. Fetch key/value pairs from the server
 ```C++
 int age = storage.get<int>("age");
-float temperature = storage.put<float>("temperature");
-bool isSwitchOn = storage.put<bool>("switch_state");
+float temperature = storage.get<float>("temperature");
+bool isSwitchOn = storage.get<bool>("switch_state");
 ```
 3. Add values to an array in the server.
 ```C++
