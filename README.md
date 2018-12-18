@@ -41,8 +41,7 @@ storage.add<String>("startup_dates", "17.12.2018");
 * You must have an instance of [CloudStorage Server](https://github.com/gilmaimon/CloudStorage-Server) running.
 * You must have valid `username` and `password` (on your CloudStorage Server)
 
-*As of 18.12.2018, you could use my public instance as server (As `BASE_URL`): http://cloudstorage.gilmaimon.xyz*
-
+*As of 18.12.2018, you could use my public instance as server (As `BASE_URL`): http://cloudstorage.gilmaimon.xyz*. 
 *You can [Click Here](http://cloudstorage.gilmaimon.xyz/user/register) to register a new user on that server.*
 
 **NOTE**:
