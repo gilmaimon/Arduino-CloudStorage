@@ -5,6 +5,11 @@
 #include "Http/EspClient.h"
 #include "Utils/ResultWrapper.h"
 
+enum PopFrom {
+  PopFrom_Start,
+  PopFrom_End
+};
+  
 template <class RequestType>
 class BaseCloudStorage {
 public:
@@ -69,9 +74,9 @@ public:
 
   //Method for pushing new values to arrays
   template <class Ty>
-  bool add(String key, Ty object) {
+  bool add(String collectionKey, Ty object) {
     // Build request json 
-    String jsonString = buildAddObjectRequestJson(key, object);
+    String jsonString = buildAddObjectRequestJson(collectionKey, object);
 
     // Construct http request
     RequestType request(
@@ -89,6 +94,38 @@ public:
     JsonObject& root = jsonBuffer.parseObject(response.body);
 
     return !root["error"]; // return isOk
+  }
+
+  // Method for popping values from arrays in the server
+  template <class Ty>
+  cloud_storage_utils::PopResultWrapper<Ty> pop(String collectionKey, PopFrom popFrom) {
+    // Build request json 
+    String jsonString = buildPopRequestJson(collectionKey, popFrom);
+
+    // Construct http request
+    RequestType request(
+      _baseServerUrl + "/data/collection/pop", 
+      http::Method::GET, 
+      jsonString
+    );
+    request.addHeader("Content-Type", "application/json; charset=utf-8");
+
+    // Execute request and return success status
+    http::Response response = request.execute();
+    if(response.statusCode != 200) return false;
+    
+    StaticJsonBuffer<300> jsonBuffer;
+    JsonObject& root = jsonBuffer.parseObject(response.body);
+
+    if(root["error"]) {
+      return false;
+    }
+
+    return cloud_storage_utils::PopResultWrapper<Ty>(
+      true,
+      root["result"]["value"],
+      !root["result"]["empty"]
+    );
   }
   
 private:
@@ -129,14 +166,30 @@ private:
 
   // Utility method for constructing *Add* request json string
   template <class Ty>
-  String buildAddObjectRequestJson(String key, Ty object) {
+  String buildAddObjectRequestJson(String collectionKey, Ty object) {
     // Compose request json object
     StaticJsonBuffer<200> jsonBuffer;
     JsonObject& root = jsonBuffer.createObject();
     root["username"] = _username;
     root["password"] = _password;
-    root["collection_key"] = key;
+    root["collection_key"] = collectionKey;
     root["value"] = object;
+
+    // Return string form of the object
+    String jsonString;
+    root.printTo(jsonString);
+    return jsonString;
+  }
+
+  // Utility method for constructing *Pop* request json string
+  String buildPopRequestJson(String collectionKey, PopFrom popFrom) {
+    // Compose request json object
+    StaticJsonBuffer<200> jsonBuffer;
+    JsonObject& root = jsonBuffer.createObject();
+    root["username"] = _username;
+    root["password"] = _password;
+    root["collection_key"] = collectionKey;
+    root["position"] = (popFrom == PopFrom_Start? "first": "last");
 
     // Return string form of the object
     String jsonString;
