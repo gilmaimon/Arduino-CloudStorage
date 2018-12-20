@@ -32,7 +32,7 @@ public:
     
     // Execute request and return success status
     http::Response response = request.execute();
-    if(response.code != 200) return false;
+    if(response.statusCode != 200) return false;
 
     StaticJsonBuffer<300> jsonBuffer;
     JsonObject& root = jsonBuffer.parseObject(response.body);
@@ -56,7 +56,7 @@ public:
     
     //Execute request
     http::Response response = request.execute();
-    if(response.code != 200) return false;
+    if(response.statusCode != 200) return false;
 
     // Parse response body and extract the wanted value
     StaticJsonBuffer<300> jsonBuffer;
@@ -83,7 +83,7 @@ public:
 
     // Execute request and return success status
     http::Response response = request.execute();
-    if(response.code != 200) return false;
+    if(response.statusCode != 200) return false;
     
     StaticJsonBuffer<300> jsonBuffer;
     JsonObject& root = jsonBuffer.parseObject(response.body);
