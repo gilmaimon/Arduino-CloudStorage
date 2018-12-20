@@ -31,11 +31,27 @@ int age = storage.get<int>("age");
 float temperature = storage.get<float>("temperature");
 bool isSwitchOn = storage.get<bool>("switch_state");
 ```
-3. Add values to an array in the server.
+3. Add values to an array in the server
 ```C++
 storage.add<float>("sensor_values", getCurrentSensorValue());
 storage.add<String>("startup_dates", "17.12.2018");
 ```
+4. Pop values from an array in the server
+```C++
+String color = storage.pop<String>("colors_to_show", PopFrom_End);
+float temp = storage.pop<float>("tempertures", PopFrom_Start);
+```
+```C++
+// More advanced example of pop. In the previous example the returned value is 
+// implicitly casted into the required return type (String, float etc..)
+while(true) {
+  auto popResult = storage.pop<String>("lines_to_print", PopFrom_Start);
+  if(popResult.isOK == false) break;
+  proccessLine(popResult.value);
+  if(popResult.hasNext == false) break;
+}
+```
+
 
 # Requirements
 * This library uses the `ArduinoJson` library as a depedency.
