@@ -3,6 +3,7 @@
 #include <ArduinoJson.h>
 #include "Http/Client.h"
 #include "Http/EspClient.h"
+#include "Utils/ResultWrapper.h"
 
 template <class RequestType>
 class BaseCloudStorage {
@@ -31,12 +32,17 @@ public:
     
     // Execute request and return success status
     http::Response response = request.execute();
-    return response.statusCode == 200;
+    if(response.code != 200) return false;
+
+    StaticJsonBuffer<300> jsonBuffer;
+    JsonObject& root = jsonBuffer.parseObject(response.body);
+
+    return !root["error"]; // return isOk
   }
 
   // Method for retrieving key/value pair
   template <class Ty>
-  Ty get(String key) {
+  cloud_storage_utils::ResultWrapper<Ty> get(String key) {
     // Build request json 
     String jsonString = buildGetObjectRequestJson(key);
     
@@ -50,11 +56,15 @@ public:
     
     //Execute request
     http::Response response = request.execute();
+    if(response.code != 200) return false;
 
     // Parse response body and extract the wanted value
     StaticJsonBuffer<300> jsonBuffer;
     JsonObject& root = jsonBuffer.parseObject(response.body);
-    return getValueByKey<Ty>(root["result"], key);
+    return cloud_storage_utils::ResultWrapper<Ty>(
+      !root["error"],
+      getValueByKey<Ty>(root["result"], key)
+    );
   }
 
   //Method for pushing new values to arrays
@@ -73,7 +83,12 @@ public:
 
     // Execute request and return success status
     http::Response response = request.execute();
-    return response.statusCode == 200;
+    if(response.code != 200) return false;
+    
+    StaticJsonBuffer<300> jsonBuffer;
+    JsonObject& root = jsonBuffer.parseObject(response.body);
+
+    return !root["error"]; // return isOk
   }
   
 private:
