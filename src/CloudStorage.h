@@ -214,4 +214,4 @@ private:
   } 
 };
 
-typedef BaseCloudStorage<http::Esp8266Request> CloudStorage;
+typedef BaseCloudStorage<http::GenericEspRequest> CloudStorage;

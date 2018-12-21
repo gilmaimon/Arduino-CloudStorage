@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Client.h"
-#include "Esp8266RequestImpl.h"
+#include "GenericEspRequestImpl.h"
 
 namespace http {
-    typedef Request<Esp8266RequestImpl> Esp8266Request;
+    typedef Request<GenericEspRequestImpl> GenericEspRequest;
 };
