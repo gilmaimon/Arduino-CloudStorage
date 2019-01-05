@@ -128,6 +128,8 @@ public:
     );
   }
 
+  /* Atomic Operations */
+
   //Increment
   cloud_storage_utils::ResultWrapper<int> inc(String key, int value = 1) {
     return atomic<int>(key, "inc", value);
@@ -153,6 +155,29 @@ public:
   //Replace an item if it is a new maximum
   cloud_storage_utils::ResultWrapper<String> datetime(String key) {
     return atomic<String>(key, "date", "");
+  }
+
+  /* Aggregate Operations */
+  //Get the minimum item in array
+  template <class Ty>
+  cloud_storage_utils::ResultWrapper<Ty> min(String collectionKey) {
+    return aggregation<Ty>(collectionKey, "min");
+  }
+
+  //Get the maximum item in array
+  template <class Ty>
+  cloud_storage_utils::ResultWrapper<Ty> max(String collectionKey) {
+    return aggregation<Ty>(collectionKey, "max");
+  }
+
+  //Get the average of array
+  cloud_storage_utils::ResultWrapper<double> avg(String collectionKey) {
+    return aggregation<double>(collectionKey, "average");
+  }
+
+  //Get the size of array
+  cloud_storage_utils::ResultWrapper<int> count(String collectionKey) {
+    return aggregation<int>(collectionKey, "count");
   }
   
 private:
@@ -282,6 +307,50 @@ private:
     return cloud_storage_utils::ResultWrapper<Ty>(
       !root["error"],
       getValueByKey<Ty>(root["result"], key)
+    );
+  }
+
+  // Utility method for constructing generic *Aggregate* request json string
+  String buildAggregationRequestJson(String collectionKey, String action) {
+    // Compose request json object
+    StaticJsonBuffer<200> jsonBuffer;
+    JsonObject& root = jsonBuffer.createObject();
+    root["username"] = _username;
+    root["password"] = _password;
+    root["collection_key"] = collectionKey;
+    root["action"] = action;
+
+    // Return string form of the object
+    String jsonString;
+    root.printTo(jsonString);
+    return jsonString;
+  }
+
+
+  //Generic Aggregation Request
+  template <class Ty>
+  cloud_storage_utils::ResultWrapper<Ty> aggregation(String key, String action) {
+    // Build request json 
+    String jsonString = buildAggregationRequestJson(key, action);
+    
+    // Construct http request
+    RequestType request(
+      _baseServerUrl + "/data/collection/aggregate", 
+      http::Method::GET, 
+      jsonString
+    );
+    request.addHeader("Content-Type", "application/json; charset=utf-8");
+    
+    //Execute request
+    http::Response response = request.execute();
+    if(response.statusCode != 200) return false;
+
+    // Parse response body and extract the wanted value
+    StaticJsonBuffer<300> jsonBuffer;
+    JsonObject& root = jsonBuffer.parseObject(response.body);
+    return cloud_storage_utils::ResultWrapper<Ty>(
+      !root["error"],
+      root["result"]
     );
   }
 };

@@ -21,3 +21,7 @@ dec	KEYWORD2
 put_min	KEYWORD2
 put_max	KEYWORD2
 datetime	KEYWORD2
+max	KEYWORD2
+min	KEYWORD2
+avg	KEYWORD2
+count	KEYWORD2
