@@ -127,6 +127,33 @@ public:
       !root["result"]["empty"]
     );
   }
+
+  //Increment
+  cloud_storage_utils::ResultWrapper<int> inc(String key, int value = 1) {
+    return atomic<int>(key, "inc", value);
+  }
+
+  //Decrement
+  cloud_storage_utils::ResultWrapper<int> dec(String key, int value = 1) {
+    return atomic<int>(key, "dec", value);
+  }
+
+  //Replace an item if it is a new minimum
+  template <class Ty>
+  cloud_storage_utils::ResultWrapper<Ty> put_min(String key, Ty value) {
+    return atomic<Ty>(key, "min", value);
+  }
+  
+  //Replace an item if it is a new maximum
+  template <class Ty>
+  cloud_storage_utils::ResultWrapper<Ty> put_max(String key, Ty value) {
+    return atomic<Ty>(key, "max", value);
+  }
+
+  //Replace an item if it is a new maximum
+  cloud_storage_utils::ResultWrapper<String> datetime(String key) {
+    return atomic<String>(key, "date", "");
+  }
   
 private:
   String _username, _password;
@@ -197,6 +224,24 @@ private:
     return jsonString;
   }
 
+  // Utility method for constructing generic *Atomic* request json string
+  template <class Ty>
+  String buildAtomicRequestJson(String key, String action, Ty value) {
+    // Compose request json object
+    StaticJsonBuffer<200> jsonBuffer;
+    JsonObject& root = jsonBuffer.createObject();
+    root["username"] = _username;
+    root["password"] = _password;
+    root["key"] = key;
+    root["action"] = action;
+    root["value"] = value;
+
+    // Return string form of the object
+    String jsonString;
+    root.printTo(jsonString);
+    return jsonString;
+  }
+
   // Method for accessing nested json objects with '.' seperated keys.
   // for examples "name.first.english" for accessing name:{.., first:{ english: "MyName", .... }}
   template <class Type>
@@ -211,7 +256,34 @@ private:
 
     // traverse the parentKey object
     return getValueByKey<Type>(root[parentKey], remainder);
-  } 
+  }
+
+  //Generic Atomic Request
+  template <class Ty>
+  cloud_storage_utils::ResultWrapper<Ty> atomic(String key, String action, Ty value) {
+    // Build request json 
+    String jsonString = buildAtomicRequestJson<Ty>(key, action, value);
+    
+    // Construct http request
+    RequestType request(
+      _baseServerUrl + "/data/object/atomic", 
+      http::Method::GET, 
+      jsonString
+    );
+    request.addHeader("Content-Type", "application/json; charset=utf-8");
+    
+    //Execute request
+    http::Response response = request.execute();
+    if(response.statusCode != 200) return false;
+
+    // Parse response body and extract the wanted value
+    StaticJsonBuffer<300> jsonBuffer;
+    JsonObject& root = jsonBuffer.parseObject(response.body);
+    return cloud_storage_utils::ResultWrapper<Ty>(
+      !root["error"],
+      getValueByKey<Ty>(root["result"], key)
+    );
+  }
 };
 
 typedef BaseCloudStorage<http::GenericEspRequest> CloudStorage;
