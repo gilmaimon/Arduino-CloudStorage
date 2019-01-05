@@ -51,6 +51,12 @@ while(true) {
   if(popResult.hasNext == false) break;
 }
 ```
+5. Get an aggregate of a collection
+```
+int average = storage.avg("samples");
+int min = storage.min<int>("samples");
+int max = storage.max<int>("samples");
+```
 
 
 # Requirements
