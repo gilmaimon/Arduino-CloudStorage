@@ -22,8 +22,13 @@ void loop() {
   if (WifiConnection::isConnected()) {
     
     // add that value to array in the server
-    storage.add("times_alive", millis());
+    bool isOk = storage.add("times_alive", millis());
     
+    // notify if error occurred
+    if(isOk == false) {
+      Serial.println("Something went wrong...");  
+    }
+
   } else {
     Serial.println("No Connection");
   }
