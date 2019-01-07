@@ -179,6 +179,12 @@ public:
   cloud_storage_utils::ResultWrapper<int> count(String collectionKey) {
     return aggregation<int>(collectionKey, "count");
   }
+
+  //Get the sum of array
+  template <class Ty>
+  cloud_storage_utils::ResultWrapper<Ty> sum(String collectionKey) {
+    return aggregation<Ty>(collectionKey, "count");
+  }
   
 private:
   String _username, _password;
