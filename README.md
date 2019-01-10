@@ -65,8 +65,9 @@ int max = storage.max<int>("samples");
 * You must have valid `username` and `password` (on your CloudStorage Server)
 
 # Public Experiment Server
-*As of 18.12.2018, you could use my public instance as server (As `BASE_URL`): http://cloudstorage.gilmaimon.xyz*. 
-*You can [Click Here](http://cloudstorage.gilmaimon.xyz/user/register) to register a new user on that server.*
+*As of 18.12.2018, you could use my public instance as server (As `BASE_URL`): http://cloudstorage.gilmaimon.xyz:5050*. 
+*You can [Click Here](http://cloudstorage.gilmaimon.xyz:5050/user/register) to register a new user on that server.*
+11.01.2019 Update: Server moved to port 5050.
 
 **NOTE**:
 * This server will not stay alive forever. 
