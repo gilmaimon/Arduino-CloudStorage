@@ -23,13 +23,13 @@ install:
   - mkdir -p $HOME/Arduino/libraries
   - ln -s $PWD $HOME/Arduino/libraries/.
 script:
-  - buildExampleSketch "Basics/1. Objects/Get"
-  - buildExampleSketch "Basics/1. Objects/Put"
-  - buildExampleSketch "Basics/2. Collections/Add"
-  - buildExampleSketch "Basics/2. Collections/Pop"
-  - buildExampleSketch "Basics/3. Atomics/Datetime"
-  - buildExampleSketch "Basics/3. Atomics/DecrementIncrement"
-  - buildExampleSketch "Basics/3. Atomics/PutMinMax"
-  - buildExampleSketch "Basics/4. Aggregation/Aggregations"
+  - buildExampleSketch "Basics/1.Objects/Get"
+  - buildExampleSketch "Basics/1.Objects/Put"
+  - buildExampleSketch "Basics/2.Collections/Add"
+  - buildExampleSketch "Basics/2.Collections/Pop"
+  - buildExampleSketch "Basics/3.Atomics/Datetime"
+  - buildExampleSketch "Basics/3.Atomics/DecrementIncrement"
+  - buildExampleSketch "Basics/3.Atomics/PutMinMax"
+  - buildExampleSketch "Basics/4.Aggregation/Aggregations"
   - buildExampleSketch "Use-Cases/Increment"
   - buildExampleSketch "Use-Cases/Logger"
