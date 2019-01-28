@@ -1,5 +1,4 @@
-[![arduino-library-badge](https://www.ardu-badge.com/badge/ArduinoCloudStorage.svg)](https://www.ardu-badge.com/ArduinoCloudStorage)
-
+[![arduino-library-badge](https://www.ardu-badge.com/badge/ArduinoCloudStorage.svg)](https://www.ardu-badge.com/ArduinoCloudStorage)  [![Build Status](https://travis-ci.org/gilmaimon/Arduino-CloudStorage.svg?branch=master)](https://travis-ci.org/gilmaimon/Arduino-CloudStorage)
 # Arduino-CloudStorage
 Arduino/ESP8266 library that allows you to easly store and retreive data from a remote (cloud) storage. CloudStorage server can be found [here](https://github.com/gilmaimon/CloudStorage-Server).
 *Open an issue or contact me if you need any help!*
