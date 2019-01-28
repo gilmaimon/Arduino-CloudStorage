@@ -61,7 +61,7 @@ int max = storage.max<int>("samples");
 
 
 # Requirements
-* This library uses the `ArduinoJson` library as a depedency.
+* This library uses the `ArduinoJson` library as a depedency - version 5.13.4 (IMPORTANT).
 * You must have an instance of [CloudStorage Server](https://github.com/gilmaimon/CloudStorage-Server) running.
 * You must have valid `username` and `password` (on your CloudStorage Server)
 
