@@ -8,6 +8,7 @@
 #define BUTTON_PIN_2 9
 
 CloudStorage storage("BASE_URL", "USERNAME", "PASSWORD");
+int score = 0;
 
 bool isButton1Pressed() {
     return digitalRead(BUTTON_PIN_1) == false;
@@ -32,8 +33,6 @@ void setup() {
 
   score = storage.get<int>("counter");
 }
-
-int score = 0;
 
 void loop() {
   if(WifiConnection::isConnected() == false) {
