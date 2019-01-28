@@ -12,6 +12,7 @@ before_install:
   - arduino-cli config dump
   - export PATH=$PATH:$HOME/bin
   - arduino-cli core update-index
+  - arduino-cli core install arduino:avr
   - arduino-cli core install esp8266:esp8266
   - arduino-cli core install esp32:esp32
   - arduino-cli lib install ArduinoJson
