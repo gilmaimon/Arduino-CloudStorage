@@ -1,0 +1,34 @@
+language: generic
+env:
+  global:
+    - CLI_VERSION=latest
+before_install:
+  - wget http://downloads.arduino.cc/arduino-cli/arduino-cli-$CLI_VERSION-linux64.tar.bz2
+  - tar xf arduino-cli-$CLI_VERSION-linux64.tar.bz2
+  - mv arduino-cli-*-linux64 $HOME/bin/arduino-cli
+  - mkdir -p $HOME/bin
+  - arduino-cli config init
+  - mv $PWD/travis/.cli-config.yml $HOME/bin/.cli-config.yml
+  - arduino-cli config dump
+  - export PATH=$PATH:$HOME/bin
+  - arduino-cli core update-index
+  - arduino-cli core install esp8266:esp8266
+  - arduino-cli core install esp32:esp32
+  - arduino-cli lib install ArduinoJson
+  - buildExampleSketchEsp8266() { arduino-cli compile --fqbn esp8266:esp8266:generic $PWD/examples/$1; }
+  - buildExampleSketchEsp32() { arduino-cli compile --fqbn esp32:esp32:esp32 $PWD/examples/$1; }
+  - buildExampleSketch() { buildExampleSketchEsp8266 $1; buildExampleSketchEsp32 $1;}
+install:
+  - mkdir -p $HOME/Arduino/libraries
+  - ln -s $PWD $HOME/Arduino/libraries/.
+script:
+  - buildExampleSketch Basics/1. Objects/Get
+  - buildExampleSketch Basics/1. Objects/Put
+  - buildExampleSketch Basics/2. Collections/Add
+  - buildExampleSketch Basics/2. Collections/Pop
+  - buildExampleSketch Basics/3. Atomics/Datetime
+  - buildExampleSketch Basics/3. Atomics/DecrementIncrement
+  - buildExampleSketch Basics/3. Atomics/PutMinMax
+  - buildExampleSketch Basics/4. Aggregation/Aggregations
+  - buildExampleSketch Basics/Use-Cases/Increment
+  - buildExampleSketch Basics/Use-Cases/Logger
