@@ -1,1 +1,5 @@
 .vscode/
+
+#arduino compiled
+*.bin
+*.elf
