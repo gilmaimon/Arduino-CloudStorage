@@ -17,11 +17,11 @@ namespace cloud_storage_utils {
     
     template <class Ty> struct PopResultWrapper {
         const bool isOk;
-        const bool hasNext;
         const Ty value;
+        const bool hasNext;
 
-        PopResultWrapper(bool isOk, Ty value, bool hasNext) : isOk(isOk), value(value), hasNext(hasNext) {}
-        PopResultWrapper(bool isOk) : isOk(isOk), hasNext(false), value() {} // value & hasNext are default
+        PopResultWrapper(bool isOk, Ty value, bool hasNext) : isOk(isOk), value(value), hasNext(hasNext)  {}
+        PopResultWrapper(bool isOk) : PopResultWrapper(isOk, {}, false) {}
 
         operator Ty() {
             return value;
