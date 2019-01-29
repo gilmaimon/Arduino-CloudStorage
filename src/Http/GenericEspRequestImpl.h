@@ -2,6 +2,7 @@
 
 #include "RequestInterface.h"
 #include <HTTPClient.h>
+#include <WiFiClient.h>
 
 namespace http {
   class GenericEspRequestImpl : public RequestInterface {
@@ -9,7 +10,8 @@ namespace http {
     GenericEspRequestImpl() : RequestInterface() {}
 
     void setUrl(String url) override {
-      _http.begin(url);
+      WiFiClient client;
+      _http.begin(client, url);
     }
 
     void setMethod(Method m) override {

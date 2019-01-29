@@ -3,6 +3,7 @@
 #ifdef ARDUINO_ARCH_ESP32
 
 #include <WiFi.h>
+#include <WiFiClient.h>
 namespace WifiConnection {    
   // Sets wifi mode to STA and tries to connect to a network
   void tryConnect(String ssid, String pass) {
