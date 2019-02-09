@@ -24,11 +24,25 @@ public:
   // Method for storing a key/value pair
   template <class Ty>
   bool put(String key, Ty value) {
-    return execute_boolean_response_http_request(
-      "/data/object",
+    // Build request json 
+    String jsonString = buildStoreObjectRequestJson(key, value);
+
+    // Construct http request
+    RequestType request(
+      _baseServerUrl + "/data/object", 
       http::Method::POST, 
-      buildStoreObjectRequestJson(key, value)
+      jsonString
     );
+    request.addHeader("Content-Type", "application/json");
+    
+    // Execute request and return success status
+    http::Response response = request.execute();
+    if(response.statusCode != 200) return false;
+
+    StaticJsonBuffer<300> jsonBuffer;
+    JsonObject& root = jsonBuffer.parseObject(response.body);
+
+    return !root["error"]; // return isOk
   }
 
   // Method for retrieving key/value pair
@@ -61,11 +75,25 @@ public:
   //Method for pushing new values to arrays
   template <class Ty>
   bool add(String collectionKey, Ty object) {
-    return execute_boolean_response_http_request(
-      "/data/collection",
+    // Build request json 
+    String jsonString = buildAddObjectRequestJson(collectionKey, object);
+
+    // Construct http request
+    RequestType request(
+      _baseServerUrl + "/data/collection", 
       http::Method::POST, 
-      buildAddObjectRequestJson(collectionKey, object)
+      jsonString
     );
+    request.addHeader("Content-Type", "application/json; charset=utf-8");
+
+    // Execute request and return success status
+    http::Response response = request.execute();
+    if(response.statusCode != 200) return false;
+    
+    StaticJsonBuffer<300> jsonBuffer;
+    JsonObject& root = jsonBuffer.parseObject(response.body);
+
+    return !root["error"]; // return isOk
   }
 
   // Method for popping values from arrays in the server
@@ -330,25 +358,6 @@ private:
       !root["error"],
       root["result"]
     );
-  }
-
-  // Base method for http requests that only return boolean value (error)
-  bool execute_boolean_response_http_request(String path, http::Method method, String bodyJson) {
-    // Construct http request
-    RequestType request(
-      _baseServerUrl + path, 
-      method, 
-      bodyJson
-    );
-
-    // Execute request and return success status
-    http::Response response = request.execute();
-    if(response.statusCode != 200) return false;
-
-    StaticJsonBuffer<300> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(response.body);
-
-    return !root["error"]; // return isOk
   }
 };
 
