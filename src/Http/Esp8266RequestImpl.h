@@ -2,7 +2,6 @@
 
 #include "RequestInterface.h"
 #include <ESP8266HTTPClient.h>
-#include <WiFiClient.h>
 
 namespace http {
   class Esp8266RequestImpl : public RequestInterface {
@@ -10,7 +9,7 @@ namespace http {
     Esp8266RequestImpl() : RequestInterface() {}
 
     void setUrl(String url) override {
-      _http.begin(this->_client, url);
+      _http.begin(url);
     }
 
     void setMethod(Method m) override {
@@ -47,6 +46,5 @@ namespace http {
     Method _method;
     String _body, _url;
     HTTPClient _http;
-    WiFiClient _client;
   };
 };
