@@ -10,8 +10,7 @@ namespace http {
     Esp8266RequestImpl() : RequestInterface() {}
 
     void setUrl(String url) override {
-      WiFiClient client;
-      _http.begin(client, url);
+      _http.begin(this->_client, url);
     }
 
     void setMethod(Method m) override {
@@ -48,5 +47,6 @@ namespace http {
     Method _method;
     String _body, _url;
     HTTPClient _http;
+    WiFiClient _client;
   };
 };
