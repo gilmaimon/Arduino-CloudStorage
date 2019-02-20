@@ -6,6 +6,7 @@
 #include "Http/EspClient.h"
 #include "Utils/ResultWrapper.h"
 #include <functional>
+#include <Arduino.h>
 
 typedef std::function<void(String)> KeyChangedCallback;
 enum PopFrom {
@@ -24,7 +25,7 @@ public:
     this->_password = pass;
   }
 
-  void startListeningForUpdates(String host, int port) {
+  void startListeningForUpdates() {
     client.onMessage([&](websockets::WebsocketsMessage msg) {
       String data(msg.data().c_str());
       
@@ -34,15 +35,24 @@ public:
       StaticJsonBuffer<300> jsonBuffer;
       JsonObject& root = jsonBuffer.parseObject(data);
 
+      // If the message is a succesfull login message, let the user know
+      if(root["type"] == "login") {
+        bool isError = root["error"];
+        return;
+        // TODO call a callback
+      }
+
       if(root["error"]) return;
       String type = root["type"];
 
+      // if the message is about a changed key, let the user know
       if(type == "value-changed") {
         String key = root["result"]["key"];
         this->_listenCallback(key);
       }
     });
-    client.connect(host.c_str(), port, "/");
+    auto connectString = this->_baseServerUrl + "/listen";
+    client.connect(connectString.c_str());
     if(client.available()) {
       // send login string
       String loginJson = "{\"type\": \"login\",\"username\": \"" + this->_username + "\", \"password\": \"" + this->_password + "\" }";
