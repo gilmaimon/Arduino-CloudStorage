@@ -53,13 +53,13 @@ while(true) {
 }
 ```
 5. Get an aggregate of a collection
-```
+```c++
 int average = storage.avg("samples");
 int min = storage.min<int>("samples");
 int max = storage.max<int>("samples");
 ```
 6. Listen for changes ***(beta)***
-```
+```c++
 // TODO fix connect 
 storage.startListeningForUpdates("SERVER_IP", 8080);
 
