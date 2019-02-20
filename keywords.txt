@@ -26,3 +26,7 @@ min	KEYWORD2
 avg	KEYWORD2
 count	KEYWORD2
 sum	KEYWORD2
+startListeningForUpdates	KEYWORD2
+listen	KEYWORD2
+setChangeCallback	KEYWORD2
+isListeningForUpdates	KEYWORD2

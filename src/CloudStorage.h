@@ -1,10 +1,13 @@
 #pragma once
 
 #include <ArduinoJson.h>
+#include <ArduinoWebsockets.h>
 #include "Http/Client.h"
 #include "Http/EspClient.h"
 #include "Utils/ResultWrapper.h"
+#include <functional>
 
+typedef std::function<void(String)> KeyChangedCallback;
 enum PopFrom {
   PopFrom_Start,
   PopFrom_End
@@ -14,11 +17,54 @@ template <class RequestType>
 class BaseCloudStorage {
 public:
   BaseCloudStorage(String baseServerUrl, String username = "", String password = ""): 
-    _username(username), _password(password), _baseServerUrl(baseServerUrl) {}
+    _username(username), _password(password), _baseServerUrl(baseServerUrl), _listenCallback([](String){}) {}
   
   void setCredentials(String name, String pass) {
     this->_username = name;
     this->_password = pass;
+  }
+
+  void startListeningForUpdates(String host, int port) {
+    client.onMessage([&](websockets::WebsocketsMessage msg) {
+      String data(msg.data().c_str());
+      
+      Serial.print("Got Data: ");
+      Serial.println(data);
+      
+      StaticJsonBuffer<300> jsonBuffer;
+      JsonObject& root = jsonBuffer.parseObject(data);
+
+      if(root["error"]) return;
+      String type = root["type"];
+
+      if(type == "value-changed") {
+        String key = root["result"]["key"];
+        this->_listenCallback(key);
+      }
+    });
+    client.connect(host.c_str(), port, "/");
+    if(client.available()) {
+      // send login string
+      String loginJson = "{\"type\": \"login\",\"username\": \"" + this->_username + "\", \"password\": \"" + this->_password + "\" }";
+      client.send(loginJson.c_str());
+    }
+  }
+
+  void listen(String key) {
+    String listenJson = "{\"type\": \"listen\", \"key\": \"" + key + "\" }";
+    client.send(listenJson.c_str());
+  }
+  
+  void setChangeCallback(KeyChangedCallback callback) {
+    this->_listenCallback = callback;
+  }
+
+  bool isListeningForUpdates() {
+    return client.available();
+  }
+
+  void loop() {
+    client.poll();
   }
 
   // Method for storing a key/value pair
@@ -189,6 +235,8 @@ public:
 private:
   String _username, _password;
   const String _baseServerUrl;
+  websockets::WebsocketsClient client;
+  KeyChangedCallback _listenCallback;
 
   // Utility method for constructing *Store* request json string
   template <class Type>
