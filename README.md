@@ -59,11 +59,9 @@ int min = storage.min<int>("samples");
 int max = storage.max<int>("samples");
 ```
 6. Listen for changes ***(beta)***
-```c++
-// TODO fix connect 
-storage.startListeningForUpdates("SERVER_IP", 8080);
-
+```C++
 // start listening for changes
+storage.startListeningForUpdates();
 storage.setChangeCallback([&](String key){
   // Do something when a key (`key`) changes
 });
