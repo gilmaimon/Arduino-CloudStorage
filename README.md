@@ -58,7 +58,19 @@ int average = storage.avg("samples");
 int min = storage.min<int>("samples");
 int max = storage.max<int>("samples");
 ```
+6. Listen for changes ***(beta)***
+```
+// TODO fix connect 
+storage.startListeningForUpdates("SERVER_IP", 8080);
 
+// start listening for changes
+storage.setChangeCallback([&](String key){
+  // Do something when a key (`key`) changes
+});
+
+// listen for changes on key "age"
+storage.listen("age");
+```
 
 # Requirements
 * This library uses the `ArduinoJson` library as a depedency - version 5.13.4 (IMPORTANT).
