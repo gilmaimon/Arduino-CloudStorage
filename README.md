@@ -1,6 +1,9 @@
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ArduinoCloudStorage.svg)](https://www.ardu-badge.com/ArduinoCloudStorage)  [![Build Status](https://travis-ci.org/gilmaimon/Arduino-CloudStorage.svg?branch=master)](https://travis-ci.org/gilmaimon/Arduino-CloudStorage)
 # Arduino-CloudStorage
 Arduino/ESP8266 library that allows you to easly store and retreive data from a remote (cloud) storage. CloudStorage server can be found [here](https://github.com/gilmaimon/CloudStorage-Server).
+
+This project allows for storage and retrival of numbers (floats, ints), strings and even arrays and complex objects. The project lets you listen for changes in real time so you can keep your IOT devices connected and synced.
+
 *Open an issue or contact me if you need any help!*
 
 Quick Jump:
@@ -92,6 +95,7 @@ storage.onChange([&](String key){
 * No explanation on setting up a server.
 
 # Examples
+See all the examples [HERE](https://github.com/gilmaimon/Arduino-CloudStorage/tree/master/examples).
 
 ### Increment Value in Server
 This example sketch:
