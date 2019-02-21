@@ -60,14 +60,16 @@ int max = storage.max<int>("samples");
 ```
 6. Listen for changes ***(beta)***
 ```C++
-// start listening for changes
-storage.startListeningForUpdates();
-storage.setChangeCallback([&](String key){
-  // Do something when a key (`key`) changes
+// listen for changes on key "temperture"
+storage.listen("temperture");
+
+// Do something when a key changes
+storage.onChange([&](String key){
+  if(key == "temperture") {
+    // Do Something
+  }
 });
 
-// listen for changes on key "age"
-storage.listen("age");
 ```
 
 # Requirements
