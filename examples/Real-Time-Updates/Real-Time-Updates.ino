@@ -24,7 +24,7 @@ void setup() {
 
   // listen for changes on key `led_state`
   storage.listen("led_state");
-  storage.onChange([](String key){
+  storage.onChange([&](String key){
       if(key == "led_state") {
           // get the new state
           bool state = storage.get<bool>("led_state");
