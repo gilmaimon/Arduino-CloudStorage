@@ -6,11 +6,11 @@
 */
 
 CloudStorage storage("BASE_URL", "USERNAME", "PASSWORD");
-#define LED LED_BUILTIN
+#define LED_PIN 0
 
 void setup() {
   Serial.begin(115200);
-  pinMode(LED, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
   
   // Try to connect to a wifi network
   WifiConnection::tryConnect("WIFI_SSID", "WIFI_PASSWORD");
@@ -34,7 +34,7 @@ void setup() {
           Serial.println(state);
 
           // update led
-          digitalWrite(LED, state);
+          digitalWrite(LED_PIN, state);
       }
   });
 }
