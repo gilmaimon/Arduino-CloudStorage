@@ -1,10 +1,13 @@
 #pragma once
 
 #include <ArduinoJson.h>
+#include <ArduinoWebsockets.h>
 #include "Http/Client.h"
 #include "Http/EspClient.h"
 #include "Utils/ResultWrapper.h"
+#include <functional>
 
+typedef std::function<void(String)> KeyChangedCallback;
 enum PopFrom {
   PopFrom_Start,
   PopFrom_End
@@ -14,11 +17,42 @@ template <class RequestType>
 class BaseCloudStorage {
 public:
   BaseCloudStorage(String baseServerUrl, String username = "", String password = ""): 
-    _username(username), _password(password), _baseServerUrl(baseServerUrl) {}
+    _username(username), 
+    _password(password), 
+    _baseServerUrl(baseServerUrl), 
+    _connectionState(WS_STATE_NOT_CONNECTED), 
+    _listenCallback([](String){}) {
+      // Empty
+    }
   
   void setCredentials(String name, String pass) {
     this->_username = name;
     this->_password = pass;
+  }
+
+  void listen(String key) {
+    if(this->_connectionState == WS_STATE_CONNECTED) {
+      String listenJson = "{\"type\": \"listen\", \"key\": \"" + key + "\" }";
+      client.send(listenJson.c_str());
+    } else if(this->_connectionState == WS_STATE_NOT_CONNECTED) {
+      startListeningForUpdates();
+      _keysPendingConnection.push_back(key);
+    } else if(this->_connectionState == WS_STATE_CONNECTING) {
+      _keysPendingConnection.push_back(key);
+    }
+  }
+  
+  void onChange(KeyChangedCallback callback) {
+    this->_listenCallback = callback;
+  }
+
+  bool isListeningForUpdates() {
+    return client.available() && this->_connectionState == WS_STATE_CONNECTED;
+  }
+
+  // loop must be called for ws poll to run (for receiving updates from ws server)
+  void loop() {
+    client.poll();
   }
 
   // Method for storing a key/value pair
@@ -189,6 +223,75 @@ public:
 private:
   String _username, _password;
   const String _baseServerUrl;
+
+  enum WSConnectionState {
+    WS_STATE_CONNECTING,
+    WS_STATE_FAILED,
+    WS_STATE_CONNECTED,
+    WS_STATE_NOT_CONNECTED
+  };
+
+  WSConnectionState _connectionState;
+  websockets::WebsocketsClient client;
+  std::vector<String> _keysPendingConnection;
+  KeyChangedCallback _listenCallback;
+
+  
+  // Calling this method will start a connect & log-in sequence with the ws
+  // route in the CloudStorage Server. This method is statfull and should only be called
+  // when _connectionState is either NOT_CONNECTED on FAILED
+  // After succesfully connecting, it will send all pending keys to the server (will start listening on them)
+  void startListeningForUpdates() {
+    if(this->_connectionState != WS_STATE_NOT_CONNECTED && this->_connectionState != WS_STATE_FAILED) {
+      // See constrains.
+      return;
+    }
+
+    this->_connectionState = WS_STATE_CONNECTING;
+    client.onMessage([&](websockets::WebsocketsMessage msg) {
+      String data(msg.data().c_str());
+      
+      // parse response json      
+      StaticJsonBuffer<300> jsonBuffer;
+      JsonObject& root = jsonBuffer.parseObject(data);
+
+      // If the message is about the login, proccess it and update state
+      if(root["type"] == "login") {
+        bool isError = root["error"];
+        if(isError) {
+          // in case of bad login, set to fail and close connection
+          this->_connectionState = WS_STATE_FAILED;
+          this->client.close();
+        } else {
+          // in case of successfull login, send all pending keys and update state
+          this->_connectionState = WS_STATE_CONNECTED;
+          for(auto& key : this->_keysPendingConnection) {
+            listen(key);
+          }
+          this->_keysPendingConnection.clear();
+        }
+      }
+
+      if(root["error"]) return;
+      String type = root["type"];
+
+      // if the message is about a changed key, let the user know
+      if(type == "value-changed") {
+        String key = root["result"]["key"];
+        this->_listenCallback(key);
+      }
+    });
+    auto connectString = this->_baseServerUrl + "/listen";
+    bool didConnect = client.connect(connectString.c_str());
+    // check if connection was successfull
+    if(didConnect) {
+      // send login string
+      String loginJson = "{\"type\": \"login\",\"username\": \"" + this->_username + "\", \"password\": \"" + this->_password + "\" }";
+      client.send(loginJson.c_str());
+    } else {
+      this->_connectionState = WS_STATE_FAILED;
+    }
+  }
 
   // Utility method for constructing *Store* request json string
   template <class Type>

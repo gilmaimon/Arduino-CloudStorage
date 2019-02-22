@@ -1,6 +1,9 @@
 [![arduino-library-badge](https://www.ardu-badge.com/badge/ArduinoCloudStorage.svg)](https://www.ardu-badge.com/ArduinoCloudStorage)  [![Build Status](https://travis-ci.org/gilmaimon/Arduino-CloudStorage.svg?branch=master)](https://travis-ci.org/gilmaimon/Arduino-CloudStorage)
 # Arduino-CloudStorage
-Arduino/ESP8266 library that allows you to easly store and retreive data from a remote (cloud) storage. CloudStorage server can be found [here](https://github.com/gilmaimon/CloudStorage-Server).
+Arduino/ESP8266 library that allows you to easly store and retreive data from a remote (cloud) storage in a key/value fashion. CloudStorage server can be found [here](https://github.com/gilmaimon/CloudStorage-Server).
+
+This project allows for storage and retrival of numbers (floats, ints), strings and even arrays and complex objects. The project lets you listen for changes in real time so you can keep your IOT devices connected and synced.
+
 *Open an issue or contact me if you need any help!*
 
 Quick Jump:
@@ -53,12 +56,24 @@ while(true) {
 }
 ```
 5. Get an aggregate of a collection
-```
+```c++
 int average = storage.avg("samples");
 int min = storage.min<int>("samples");
 int max = storage.max<int>("samples");
 ```
+6. Listen for changes ***(beta)***
+```C++
+// listen for changes on key "temperture"
+storage.listen("temperture");
 
+// Do something when a key changes
+storage.onChange([&](String key){
+  if(key == "temperture") {
+    // Do Something
+  }
+});
+
+```
 
 # Requirements
 * This library uses the `ArduinoJson` library as a depedency - version 5.13.4 (IMPORTANT).
@@ -80,6 +95,7 @@ int max = storage.max<int>("samples");
 * No explanation on setting up a server.
 
 # Examples
+See all the examples [HERE](https://github.com/gilmaimon/Arduino-CloudStorage/tree/master/examples).
 
 ### Increment Value in Server
 This example sketch:
