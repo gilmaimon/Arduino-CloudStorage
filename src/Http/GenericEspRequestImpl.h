@@ -33,10 +33,14 @@ namespace http {
       Response response;
       response.statusCode = httpCode;
       
-      if(httpCode == 200) response.body = this->_http.getString();
+      if(httpCode == 200) {
+        response.body = "";//this->_http.getString();
+        while(_client.available()) {
+          char ch = _client.read();
+          response.body += ch;
+        }
+      }
       else response.body = this->_http.errorToString(httpCode);
-
-      this->_http.end();
       
       return response;
     }
