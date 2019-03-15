@@ -242,22 +242,26 @@ private:
   // when _connectionState is either NOT_CONNECTED on FAILED
   // After succesfully connecting, it will send all pending keys to the server (will start listening on them)
   void startListeningForUpdates() {
-    if(this->_connectionState != WS_STATE_NOT_CONNECTED && this->_connectionState != WS_STATE_FAILED) {
+    if(this->_connectionState != WS_STATE_NOT_CONNECTED && 
+       this->_connectionState != WS_STATE_FAILED) {
       // See constrains.
       return;
     }
 
     this->_connectionState = WS_STATE_CONNECTING;
-    client.onMessage([&](websockets::WebsocketsMessage msg) {
-      String data(msg.data().c_str());
+    client.onMessage([this](websockets::WebsocketsMessage msg) {
+      //String data(msg.data().c_str());
+      //Serial.println("Got Msg: " + data);
       
       // parse response json      
-      StaticJsonBuffer<300> jsonBuffer;
-      JsonObject& root = jsonBuffer.parseObject(data);
+      StaticJsonBuffer<500> jsonBuffer;
+      JsonObject& root = jsonBuffer.parseObject(msg.data());
+      
+      String type = root["type"];
+      bool isError = root["error"];
 
       // If the message is about the login, proccess it and update state
-      if(root["type"] == "login") {
-        bool isError = root["error"];
+      if(type == "login") {
         if(isError) {
           // in case of bad login, set to fail and close connection
           this->_connectionState = WS_STATE_FAILED;
@@ -270,11 +274,10 @@ private:
           }
           this->_keysPendingConnection.clear();
         }
+        return;
       }
-
-      if(root["error"]) return;
-      String type = root["type"];
-
+      
+      if(isError) return;
       // if the message is about a changed key, let the user know
       if(type == "value-changed") {
         String key = root["result"]["key"];
@@ -282,7 +285,7 @@ private:
       }
     });
     auto connectString = this->_baseServerUrl + "/listen";
-    bool didConnect = client.connect(connectString.c_str());
+    bool didConnect = client.connect(connectString);
     // check if connection was successfull
     if(didConnect) {
       // send login string
