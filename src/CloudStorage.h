@@ -5,9 +5,10 @@
 #include "Http/Client.h"
 #include "Http/EspClient.h"
 #include "Utils/ResultWrapper.h"
+#include "Utils/AnyValue.h"
 #include <functional>
 
-typedef std::function<void(String)> KeyChangedCallback;
+typedef std::function<void(String, AnyValue&)> KeyChangedCallback;
 enum PopFrom {
   PopFrom_Start,
   PopFrom_End
@@ -21,7 +22,7 @@ public:
     _password(password), 
     _baseServerUrl(baseServerUrl), 
     _connectionState(WS_STATE_NOT_CONNECTED), 
-    _listenCallback([](String){}) {
+    _listenCallback([](String, AnyValue&){}) {
       // Empty
     }
   
@@ -281,7 +282,8 @@ private:
       // if the message is about a changed key, let the user know
       if(type == "value-changed") {
         String key = root["result"]["key"];
-        this->_listenCallback(key);
+        AnyValue value(msg.data().c_str());
+        this->_listenCallback(key, value);
       }
     });
     auto connectString = this->_baseServerUrl + "/listen";
