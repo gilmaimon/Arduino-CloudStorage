@@ -9,6 +9,8 @@
 #include <functional>
 
 typedef std::function<void(String, AnyValue&)> KeyChangedCallback;
+typedef std::function<void(String)> KeyChangedCallbackPartial;
+
 enum PopFrom {
   PopFrom_Start,
   PopFrom_End
@@ -45,6 +47,12 @@ public:
   
   void onChange(KeyChangedCallback callback) {
     this->_listenCallback = callback;
+  }
+  
+  void onChange(KeyChangedCallbackPartial callback) {
+    this->_listenCallback = [&callback](String key, AnyValue& value){
+      callback(key);
+    };
   }
 
   bool isListeningForUpdates() {
