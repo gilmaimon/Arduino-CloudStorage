@@ -73,10 +73,14 @@ storage.onChange([&](String key){
   }
 });
 
+// Process events
+while(true) {
+  storage.loop();
+}
 ```
 
 # Requirements
-* This library uses the `ArduinoJson` library as a depedency - version 5.13.4 (IMPORTANT).  [![arduino-library-badge](https://www.ardu-badge.com/badge/ArduinoJson.svg?version=5.13.4)](https://www.ardu-badge.com/ArduinoJson/5.13.4)
+* This library uses the `ArduinoJson` library as a depedency.  [![arduino-library-badge](https://www.ardu-badge.com/badge/ArduinoJson.svg)](https://www.ardu-badge.com/ArduinoJson)
 * This library uses the `ArduinoWebsockets` library.  [![arduino-library-badge](https://www.ardu-badge.com/badge/ArduinoWebsockets.svg?)](https://www.ardu-badge.com/ArduinoWebsockets)
 * You must have an instance of [CloudStorage Server](https://github.com/gilmaimon/CloudStorage-Server) running.
 * You must have valid `username` and `password` (on your CloudStorage Server)
