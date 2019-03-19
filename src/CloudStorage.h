@@ -61,7 +61,11 @@ public:
 
   // loop must be called for ws poll to run (for receiving updates from ws server)
   void loop() {
-    client.poll();
+    yield();
+    if(client.available()) {
+      client.poll();
+    }
+    yield();
   }
 
   // Method for storing a key/value pair
