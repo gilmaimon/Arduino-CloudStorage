@@ -116,7 +116,8 @@ public:
     DynamicJsonDocument root(1024);
     DeserializationError error = deserializeJson(root, response.body);
 
-    // TODO: handle error
+    if(error) return cloud_storage_utils::ResultWrapper<Ty>(false);
+
     return cloud_storage_utils::ResultWrapper<Ty>(
       !root["error"],
       getValueByKey<Ty>(root["result"], key)
@@ -429,7 +430,9 @@ private:
     // Parse response body and extract the wanted value
     DynamicJsonDocument root(1024);
     DeserializationError error = deserializeJson(root, response.body);
-    // TODO: handle error
+    
+    if(error) return cloud_storage_utils::ResultWrapper<Ty>(false);
+    
     return cloud_storage_utils::ResultWrapper<Ty>(
       !root["error"],
       getValueByKey<Ty>(root["result"], key)
@@ -473,7 +476,9 @@ private:
     // Parse response body and extract the wanted value
     DynamicJsonDocument root(1024);
     DeserializationError error = deserializeJson(root, response.body);
-    // TODO: handle errors
+    
+    if(error) return cloud_storage_utils::ResultWrapper<Ty>(false);
+    
     return cloud_storage_utils::ResultWrapper<Ty>(
       !root["error"],
       root["result"]
