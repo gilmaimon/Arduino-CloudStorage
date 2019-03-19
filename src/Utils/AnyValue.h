@@ -8,7 +8,7 @@ public:
 
   template <class Ty> 
   Ty as() {
-    DynamicJsonDocument root;
+    DynamicJsonDocument root(1024);
     deserializeJson(root, _jsonData);
     
     Ty result = root["result"]["value"];

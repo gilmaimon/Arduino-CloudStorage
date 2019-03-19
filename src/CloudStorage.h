@@ -119,7 +119,7 @@ public:
     // TODO: handle error
     return cloud_storage_utils::ResultWrapper<Ty>(
       !root["error"],
-      getValueByKey<Ty>(root["result"].as<JsonObject>(), key)
+      getValueByKey<Ty>(root["result"], key)
     );
   }
 
@@ -395,7 +395,7 @@ private:
   // Method for accessing nested json objects with '.' seperated keys.
   // for examples "name.first.english" for accessing name:{.., first:{ english: "MyName", .... }}
   template <class Type>
-  Type getValueByKey(JsonObject& root, String key) {
+  Type getValueByKey(JsonObject root, String key) {
     // in case no '.' is in the key, return the corresponding value
     if(key.indexOf('.') == -1) return root[key];
 
@@ -432,7 +432,7 @@ private:
     // TODO: handle error
     return cloud_storage_utils::ResultWrapper<Ty>(
       !root["error"],
-      getValueByKey<Ty>(root["result"].as<JsonObject>(), key)
+      getValueByKey<Ty>(root["result"], key)
     );
   }
 
