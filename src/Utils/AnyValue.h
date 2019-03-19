@@ -8,8 +8,8 @@ public:
 
   template <class Ty> 
   Ty as() {
-    StaticJsonBuffer<500> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(_jsonData);
+    DynamicJsonDocument root;
+    deserializeJson(root, _jsonData);
     
     Ty result = root["result"]["value"];
     return result;

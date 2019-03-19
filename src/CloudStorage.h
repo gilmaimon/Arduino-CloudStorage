@@ -82,10 +82,12 @@ public:
     http::Response response = request.execute();
     if(response.statusCode != 200) return false;
 
-    StaticJsonBuffer<300> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(response.body);
+    DynamicJsonDocument root(1024);
+    DeserializationError error = deserializeJson(root, response.body);
 
-    return !root["error"]; // return isOk
+    // return isOk
+    if(error) return false;
+    return !root["error"]; 
   }
 
   // Method for retrieving key/value pair
@@ -107,11 +109,13 @@ public:
     if(response.statusCode != 200) return false;
 
     // Parse response body and extract the wanted value
-    StaticJsonBuffer<300> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(response.body);
+    DynamicJsonDocument root(1024);
+    DeserializationError error = deserializeJson(root, response.body);
+
+    // TODO: handle error
     return cloud_storage_utils::ResultWrapper<Ty>(
       !root["error"],
-      getValueByKey<Ty>(root["result"], key)
+      getValueByKey<Ty>(root["result"].as<JsonObject>(), key)
     );
   }
 
@@ -133,10 +137,10 @@ public:
     http::Response response = request.execute();
     if(response.statusCode != 200) return false;
     
-    StaticJsonBuffer<300> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(response.body);
+    DynamicJsonDocument root(1024);
+    DeserializationError error = deserializeJson(root, response.body);
 
-    return !root["error"]; // return isOk
+    return !error && !root["error"]; // return isOk
   }
 
   // Method for popping values from arrays in the server
@@ -157,10 +161,10 @@ public:
     http::Response response = request.execute();
     if(response.statusCode != 200) return false;
     
-    StaticJsonBuffer<300> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(response.body);
+    DynamicJsonDocument root(1024);
+    DeserializationError error = deserializeJson(root, response.body);
 
-    if(root["error"]) {
+    if(error || root["error"]) {
       return false;
     }
 
@@ -262,12 +266,12 @@ private:
       //String data(msg.data().c_str());
       //Serial.println("Got Msg: " + data);
       
-      // parse response json      
-      StaticJsonBuffer<500> jsonBuffer;
-      JsonObject& root = jsonBuffer.parseObject(msg.data());
+      // parse response json
+      DynamicJsonDocument root(1024);
+      DeserializationError error = deserializeJson(root, msg.data());
       
       String type = root["type"];
-      bool isError = root["error"];
+      bool isError = error || root["error"];
 
       // If the message is about the login, proccess it and update state
       if(type == "login") {
@@ -310,8 +314,7 @@ private:
   template <class Type>
   String buildStoreObjectRequestJson(String key, Type value) {
     // Compose request json object
-    StaticJsonBuffer<200> jsonBuffer;
-    JsonObject& root = jsonBuffer.createObject();
+    DynamicJsonDocument root(1024);
     root["username"] = _username;
     root["password"] = _password;
     root["key"] = key;
@@ -319,22 +322,21 @@ private:
 
     // Return string form of the object
     String jsonString;
-    root.printTo(jsonString);
+    serializeJson(root, jsonString);
     return jsonString;
   }
 
   // Utility method for constructing *Get* request json string
   String buildGetObjectRequestJson(String key) {
     // Compose request json object
-    StaticJsonBuffer<200> jsonBuffer;
-    JsonObject& root = jsonBuffer.createObject();
+    DynamicJsonDocument root(1024);
     root["username"] = _username;
     root["password"] = _password;
     root["key"] = key;
 
     // Return string form of the object
     String jsonString;
-    root.printTo(jsonString);
+    serializeJson(root, jsonString);
     return jsonString;
   }
 
@@ -342,8 +344,7 @@ private:
   template <class Ty>
   String buildAddObjectRequestJson(String collectionKey, Ty object) {
     // Compose request json object
-    StaticJsonBuffer<200> jsonBuffer;
-    JsonObject& root = jsonBuffer.createObject();
+    DynamicJsonDocument root(1024);
     root["username"] = _username;
     root["password"] = _password;
     root["collection_key"] = collectionKey;
@@ -351,15 +352,14 @@ private:
 
     // Return string form of the object
     String jsonString;
-    root.printTo(jsonString);
+    serializeJson(root, jsonString);
     return jsonString;
   }
 
   // Utility method for constructing *Pop* request json string
   String buildPopRequestJson(String collectionKey, PopFrom popFrom) {
     // Compose request json object
-    StaticJsonBuffer<200> jsonBuffer;
-    JsonObject& root = jsonBuffer.createObject();
+    DynamicJsonDocument root(1024);
     root["username"] = _username;
     root["password"] = _password;
     root["collection_key"] = collectionKey;
@@ -367,7 +367,7 @@ private:
 
     // Return string form of the object
     String jsonString;
-    root.printTo(jsonString);
+    serializeJson(root, jsonString);
     return jsonString;
   }
 
@@ -375,8 +375,7 @@ private:
   template <class Ty>
   String buildAtomicRequestJson(String key, String action, Ty value) {
     // Compose request json object
-    StaticJsonBuffer<200> jsonBuffer;
-    JsonObject& root = jsonBuffer.createObject();
+    DynamicJsonDocument root(1024);
     root["username"] = _username;
     root["password"] = _password;
     root["key"] = key;
@@ -385,7 +384,7 @@ private:
 
     // Return string form of the object
     String jsonString;
-    root.printTo(jsonString);
+    serializeJson(root, jsonString);
     return jsonString;
   }
 
@@ -424,19 +423,19 @@ private:
     if(response.statusCode != 200) return false;
 
     // Parse response body and extract the wanted value
-    StaticJsonBuffer<300> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(response.body);
+    DynamicJsonDocument root(1024);
+    DeserializationError error = deserializeJson(root, response.body);
+    // TODO: handle error
     return cloud_storage_utils::ResultWrapper<Ty>(
       !root["error"],
-      getValueByKey<Ty>(root["result"], key)
+      getValueByKey<Ty>(root["result"].as<JsonObject>(), key)
     );
   }
 
   // Utility method for constructing generic *Aggregate* request json string
   String buildAggregationRequestJson(String collectionKey, String action) {
     // Compose request json object
-    StaticJsonBuffer<200> jsonBuffer;
-    JsonObject& root = jsonBuffer.createObject();
+    DynamicJsonDocument root(1024);
     root["username"] = _username;
     root["password"] = _password;
     root["collection_key"] = collectionKey;
@@ -444,7 +443,7 @@ private:
 
     // Return string form of the object
     String jsonString;
-    root.printTo(jsonString);
+    serializeJson(root, jsonString);
     return jsonString;
   }
 
@@ -468,8 +467,9 @@ private:
     if(response.statusCode != 200) return false;
 
     // Parse response body and extract the wanted value
-    StaticJsonBuffer<300> jsonBuffer;
-    JsonObject& root = jsonBuffer.parseObject(response.body);
+    DynamicJsonDocument root(1024);
+    DeserializationError error = deserializeJson(root, response.body);
+    // TODO: handle errors
     return cloud_storage_utils::ResultWrapper<Ty>(
       !root["error"],
       root["result"]
