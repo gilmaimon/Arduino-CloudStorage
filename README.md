@@ -61,7 +61,22 @@ int average = storage.avg("samples");
 int min = storage.min<int>("samples");
 int max = storage.max<int>("samples");
 ```
-6. Listen for changes ***(beta)***
+6. Atomic operations
+```c++
+int newValue = storage.inc("some_key");
+int newValue = storage.dec("some_key");
+
+// Will only set "some_key" to 3.2 if it is less than what already in some_key and returns the new value
+float newMin = storage.put_min<float>("some_key", 3.2f);
+
+// Will only set "some_key" to 1234.5 if it is more than what already in some_key and returns the new value
+float newMax = storage.put_max<float>("some_key", 1234.5f);
+
+// Puts a timestamp in the key "datetime_key" and returns the new value
+String currentDatetime = storage.datetime("datetime_key");
+
+```
+7. Listen for changes ***(beta)***
 ```C++
 // listen for changes on key "temperture"
 storage.listen("temperture");
